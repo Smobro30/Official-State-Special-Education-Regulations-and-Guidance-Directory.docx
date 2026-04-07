@@ -1,0 +1,189 @@
+import React, { useState, useMemo } from 'react';
+import { Search, ExternalLink, BookOpen, GraduationCap, Gavel, Info, ChevronRight } from 'lucide-react';
+
+const App = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('All');
+
+  const statesData = [
+    { name: "Alabama", url: "https://admincode.legislature.state.al.us/administrative-code/290-8-9" },
+    { name: "Alaska", url: "https://education.alaska.gov/tls/SPED/docs/SPEDGuidance.docx" },
+    { name: "Arizona", url: "https://azsbe.az.gov/sites/default/files/2023-08/R7-2-401_Oct%252023%2520As%2520Adopted%2520by%2520Board_0.pdf" },
+    { name: "Arkansas", url: "https://dese.ade.arkansas.gov/Offices/special-education/policy-regulations/state-rules-regulations" },
+    { name: "California", url: "https://www.cde.ca.gov/sp/se/lr/" },
+    { name: "Colorado", url: "https://ed.cde.state.co.us/spedlaw/rules" },
+    { name: "Connecticut", url: "https://portal.ct.gov/-/media/sde/special-education/regulations-of-connecticut-state-agencies-department-of-education-children-requiring-special-educati.pdf" },
+    { name: "Delaware", url: "https://regulations.delaware.gov/AdminCode/title14/922" },
+    { name: "Florida", url: "https://www.fldoe.org/core/fileparse.php/7690/urlt/1btoc.pdf" },
+    { name: "Georgia", url: "https://rules.sos.ga.gov/gac/160-4-7" },
+    { name: "Hawaii", url: "https://boe.hawaii.gov/wp-content/uploads/2024/07/60-Provision-of-a-Free-Appropriate-Public-Education-for-a-Student-with-a-Disability.pdf" },
+    { name: "Idaho", url: "https://www.sde.idaho.gov/about-us/departments/special-education/special-education-manual/" },
+    { name: "Illinois", url: "https://www.isbe.net/documents/226ark.pdf" },
+    { name: "Indiana", url: "https://www.in.gov/doe/students/special-education/laws-and-resources/" },
+    { name: "Iowa", url: "https://www.legis.iowa.gov/docs/aco/chapter/281.41.pdf" },
+    { name: "Kansas", url: "https://www.ksde.gov/Agency/Division-of-Learning-Services/Special-Education-and-Title-Services/Special_Education/Legal-Special-Education-Law/Statutes-and-Regulations-Special-Education" },
+    { name: "Kentucky", url: "https://education.ky.gov/specialed/excep/Pages/default.aspx" },
+    { name: "Louisiana", url: "https://bese.louisiana.gov/docs/default-source/policy-page/28v61.pdf" },
+    { name: "Maine", url: "https://www.maine.gov/doe/sites/maine.gov.doe/files/inline-files/Special%20Services%20-%20MUSER%20-%208-21-2024.pdf" },
+    { name: "Maryland", url: "https://regs.maryland.gov/us/md/exec/comar/13A.05" },
+    { name: "Massachusetts", url: "https://www.doe.mass.edu/lawsregs/603cmr28.html" },
+    { name: "Michigan", url: "https://www.michigan.gov/mde/services/special-education/laws-regs/marse" },
+    { name: "Minnesota", url: "https://www.revisor.mn.gov/rules/3525/" },
+    { name: "Mississippi", url: "https://mdek12.org/specialeducation/pp/" },
+    { name: "Missouri", url: "https://dese.mo.gov/special-education/compliance/dese-administrative-rules/incorporated-reference-materials/IDEAPartB-2014" },
+    { name: "Montana", url: "https://opi.mt.gov/Educators/School-Climate-Student-Wellness/Special-Education/Regulations-and-Guidance" },
+    { name: "Nebraska", url: "https://www.education.ne.gov/wp-content/uploads/2017/10/Clean51_2022.pdf" },
+    { name: "Nevada", url: "https://doe.nv.gov/offices/office-of-comprehensive-student-services/policies-and-procedures/" },
+    { name: "New Hampshire", url: "https://www.education.nh.gov/who-we-are/division-of-learner-support/bureau-of-student-support/special-education/laws-rules-policies" },
+    { name: "New Jersey", url: "https://www.nj.gov/education/code/current/title6a/chap14.pdf" },
+    { name: "New Mexico", url: "https://www.srca.nm.gov/parts/title06/06.031.0002.html" },
+    { name: "New York", url: "https://www.nysed.gov/special-education/new-york-state-laws-and-regulations-related-special-education-and-students" },
+    { name: "North Carolina", url: "https://www.dpi.nc.gov/documents/publications/catalog/ec144-policies-governing-services/open" },
+    { name: "North Dakota", url: "https://ndlegis.gov/prod/acdata/pdf/67-23-01.pdf" },
+    { name: "Ohio", url: "https://education.ohio.gov/getattachment/Topics/Special-Education/Federal-and-State-Requirements/Operational-Standards-and-Guidance/Operating-Standards-Booklet-June-2024.pdf.aspx?lang=en-US" },
+    { name: "Oklahoma", url: "https://oklahoma.gov/content/dam/ok/en/osde/documents/services/special-education/Final%20version%20Policies%20Procedures%20August%202024%20V2.pdf" },
+    { name: "Oregon", url: "https://www.oregon.gov/ode/rules-and-policies/pages/policies-and-procedures-for-special-education.aspx" },
+    { name: "Pennsylvania", url: "https://www.pacodeandbulletin.gov/Display/pacode?file=%2Fsecure%2Fpacode%2Fdata%2F022%2Fchapter14%2Fchap14toc.html" },
+    { name: "Rhode Island", url: "https://rules.sos.ri.gov/Regulations/part/200-20-30-6" },
+    { name: "South Carolina", url: "https://ed.sc.gov/districts-schools/special-education-services/fiscal-and-grants-management-fgm/grants/sc-policies-and-procedures-for-special-education/" },
+    { name: "South Dakota", url: "https://sdlegislature.gov/Rules/Administrative/24%3A05" },
+    { name: "Tennessee", url: "https://www.tn.gov/education/legal-services/special-education-legal-services.html" },
+    { name: "Texas", url: "https://tea.texas.gov/about-tea/laws-and-rules/texas-administrative-code/19-tac-chapter-89" },
+    { name: "Utah", url: "https://schools.utah.gov/specialeducation/programs/rulespolicies.php" },
+    { name: "Vermont", url: "https://resources.finalsite.net/images/v1663688150/bsuvtorg/o9jcxml3ewo8x5lhuodf/VTStateBoardofEducation_RuleSeries2360_revised5-13-2021.pdf?preview=true&site_id=816" },
+    { name: "Virginia", url: "https://law.lis.virginia.gov/admincode/title8/agency20/chapter81/" },
+    { name: "Washington", url: "https://app.leg.wa.gov/wac/default.aspx?cite=392-172A" },
+    { name: "West Virginia", url: "https://wvde.us/academics/special-education/policies-standards" },
+    { name: "Wisconsin", url: "https://dpi.wi.gov/sped/laws-procedures-bulletins" },
+    { name: "Wyoming", url: "https://edu.wyoming.gov/wp-content/uploads/2025/02/WY-Chapter-7-Rules-Students-with-Disabilities-Susan-Shipley.pdf" }
+  ];
+
+  const filteredStates = useMemo(() => {
+    return statesData.filter(state => 
+      state.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      {/* Navigation Header */}
+      <nav className="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-2">
+              <GraduationCap className="w-8 h-8 text-indigo-300" />
+              <span className="font-bold text-xl tracking-tight uppercase">SpecialEd <span className="text-indigo-300">Regs</span></span>
+            </div>
+            <div className="hidden md:flex space-x-8 text-sm font-medium">
+              <a href="#" className="hover:text-indigo-300 transition">About</a>
+              <a href="#" className="hover:text-indigo-300 transition">Resources</a>
+              <a href="#" className="hover:text-indigo-300 transition">Contact</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="bg-white border-b border-slate-200 py-12">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <h1 className="text-4xl font-extrabold text-slate-900 mb-4 sm:text-5xl">
+            State Special Education Regulations
+          </h1>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-8">
+            A comprehensive directory of governing rules and administrative codes for special education across all 50 U.S. states.
+          </p>
+
+          {/* Search Box */}
+          <div className="relative max-w-xl mx-auto">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-slate-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search by state name (e.g. 'California')..."
+              className="block w-full pl-11 pr-4 py-4 bg-white border border-slate-300 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-lg outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Grid */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <BookOpen className="w-6 h-6 text-indigo-600" />
+            {filteredStates.length} States Found
+          </h2>
+        </div>
+
+        {filteredStates.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredStates.map((state) => (
+              <a 
+                key={state.name}
+                href={state.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 hover:-translate-y-1 transition-all duration-200 relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ExternalLink className="w-4 h-4 text-indigo-500" />
+                </div>
+                
+                <div className="flex items-start gap-4">
+                  <div className="bg-indigo-50 p-3 rounded-lg group-hover:bg-indigo-100 transition-colors">
+                    <Gavel className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-slate-900 mb-1 group-hover:text-indigo-700">
+                      {state.name}
+                    </h3>
+                    <p className="text-sm text-slate-500 line-clamp-2">
+                      View Administrative Code & Special Education Policies
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="mt-6 flex items-center text-indigo-600 text-sm font-semibold group-hover:gap-2 transition-all">
+                  Access Regulations <ChevronRight className="w-4 h-4 ml-1" />
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+            <Info className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-900">No states found</h3>
+            <p className="text-slate-500 mt-2">Try adjusting your search terms or checking for spelling errors.</p>
+            <button 
+              onClick={() => setSearchTerm('')}
+              className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            >
+              Clear Search
+            </button>
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-slate-200 mt-20 py-12">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <div className="flex justify-center items-center gap-2 mb-6">
+            <GraduationCap className="w-6 h-6 text-indigo-600" />
+            <span className="font-bold text-lg text-slate-800">SpecialEd Directory</span>
+          </div>
+          <p className="text-slate-500 text-sm max-w-xl mx-auto">
+            This directory is for educational purposes. Always refer to the official state website and consult with legal counsel or school administrators for specific compliance requirements.
+          </p>
+          <div className="mt-8 pt-8 border-t border-slate-100 text-slate-400 text-xs">
+            © 2024 Special Education Regulatory Network. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default App;
